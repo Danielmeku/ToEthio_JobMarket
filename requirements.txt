@@ -1,0 +1,7 @@
+streamlit
+gspread
+pandas
+plotly
+requests
+beautifulsoup4
+python-dateutil
