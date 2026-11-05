@@ -9,7 +9,7 @@ from web_scraper import run_paginated_scraper
 
 # Page configuration
 st.set_page_config(
-    page_title="ToEthio-job", page_icon="🇪🇹", layout="wide"
+    page_title="Ethiopian Job Market Analytics", page_icon="🇪🇹", layout="wide"
 )
 
 
@@ -25,10 +25,18 @@ def parse_flexible_date(date_str):
     return None
 
 
-# Load Data Function
+# Load Data Function supporting both Local & Streamlit Cloud Secrets
 @st.cache_data(ttl=60)
 def load_data():
-  gc = gspread.service_account(filename="credentials.json")
+  try:
+    if hasattr(st, "secrets") and "gcp_service_account" in st.secrets:
+      creds_dict = dict(st.secrets["gcp_service_account"])
+      gc = gspread.service_account_from_dict(creds_dict)
+    else:
+      gc = gspread.service_account(filename="credentials.json")
+  except Exception:
+    gc = gspread.service_account(filename="credentials.json")
+
   sheet = gc.open("Job Market Database").sheet1
   data = sheet.get_all_records()
   df = pd.DataFrame(data)
