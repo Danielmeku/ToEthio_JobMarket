@@ -9,7 +9,7 @@ from web_scraper import run_paginated_scraper
 
 # Page configuration
 st.set_page_config(
-    page_title="Ethiopian Job Market Analytics", page_icon="🇪🇹", layout="wide"
+    page_title="ToEthio-job", page_icon="🇪🇹", layout="wide"
 )
 
 
