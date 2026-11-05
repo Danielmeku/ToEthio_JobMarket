@@ -1,23 +1,22 @@
 from datetime import datetime, timedelta
+import json
 import re
 from bs4 import BeautifulSoup
 import gspread
 import requests
 import streamlit as st
-import json
 
 CHANNEL_NAME = "freelance_ethio"
 BASE_URL = f"https://t.me/s/{CHANNEL_NAME}"
 
-# Initialize Google Sheets via gspread
+# Initialize Google Sheets via Streamlit Secrets (for Cloud) or credentials.json (for Local)
 try:
-  if "gcp_service_account" in st.secrets:
+  if hasattr(st, "secrets") and "gcp_service_account" in st.secrets:
     creds_dict = dict(st.secrets["gcp_service_account"])
     gc = gspread.service_account_from_dict(creds_dict)
   else:
     gc = gspread.service_account(filename="credentials.json")
 except Exception:
-  # Fallback for running web_scraper.py directly via terminal
   gc = gspread.service_account(filename="credentials.json")
 
 spreadsheet = gc.open("Job Market Database")
