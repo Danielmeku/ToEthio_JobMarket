@@ -12,6 +12,74 @@ st.set_page_config(
     page_title="Ethiopian Job Market Analytics", page_icon="🇪🇹", layout="wide"
 )
 
+# --- CUSTOM CSS FOR HIGH-TECH DARK DASHBOARD ---
+st.markdown(
+    """
+    <style>
+        /* Main background & font */
+        .stApp {
+            background-color: #0E1117;
+            color: #FAFAFA;
+        }
+        
+        /* Metric Card Containers */
+        div.stMetric {
+            background-color: #161B22;
+            border: 1px solid #30363D;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        div.stMetric:hover {
+            border-color: #00E5FF;
+            transform: translateY(-2px);
+        }
+        div.stMetric label {
+            color: #8B949E !important;
+            font-weight: 500;
+            font-size: 0.9rem !important;
+        }
+        div.stMetric [data-testid="stMetricValue"] {
+            color: #00E5FF !important;
+            font-weight: 700;
+            font-size: 1.8rem !important;
+        }
+
+        /* Section headers */
+        h2, h3 {
+            color: #E6EDF3;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            border-bottom: 1px solid #21262D;
+            padding-bottom: 8px;
+            margin-top: 24px;
+        }
+
+        /* Sidebar styling */
+        section[data-testid="stSidebar"] {
+            background-color: #161B22;
+            border-right: 1px solid #30363D;
+        }
+        section[data-testid="stSidebar"] .stButton button {
+            background: linear-gradient(135deg, #00E5FF 0%, #007ACC 100%);
+            color: #0E1117;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            width: 100%;
+            transition: opacity 0.2s ease;
+        }
+        section[data-testid="stSidebar"] .stButton button:hover {
+            opacity: 0.85;
+        }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
 
 # Robust date parsing helper for deadline calculations
 def parse_flexible_date(date_str):
@@ -25,7 +93,7 @@ def parse_flexible_date(date_str):
     return None
 
 
-# Load Data Function supporting both Local & Streamlit Cloud Secrets
+# Load Data Function
 @st.cache_data(ttl=60)
 def load_data():
   try:
@@ -60,7 +128,7 @@ def load_data():
 
 
 # -------------------------------------------------------------
-# SIDEBAR CONTROLS & FETCH BUTTON
+# SIDEBAR CONTROLS & FILTERS
 # -------------------------------------------------------------
 st.sidebar.title("🛠️ Actions & Filters")
 
@@ -89,10 +157,9 @@ try:
     st.warning("No job data found in your Google Sheet.")
     st.stop()
 
-  st.markdown(f"#### Total Active Listings Analyzed: **{len(raw_df)}**")
   st.markdown(
-      "Real-time analytics pipeline parsing job listings from Telegram web"
-      " preview."
+      f"#### Total Active Listings Analyzed: **{len(raw_df)}** &nbsp;|&nbsp;"
+      " Real-Time Intelligence Pipeline"
   )
   st.markdown("---")
 
@@ -119,11 +186,11 @@ try:
       & (raw_df["Location"].isin(selected_location))
   ]
 
-  # Key Metric Cards
+  # Key Metric Cards (styled like high-end analytics dashboards)
   col1, col2, col3, col4 = st.columns(4)
-  col1.metric("Total Jobs Listed", len(filtered_df))
+  col1.metric("TOTAL JOBS", len(filtered_df))
   col2.metric(
-      "Remote Roles",
+      "REMOTE ROLES",
       len(
           filtered_df[
               filtered_df["Workplace Type"].str.contains(
@@ -133,7 +200,7 @@ try:
       ),
   )
   col3.metric(
-      "On-site Roles",
+      "ON-SITE ROLES",
       len(
           filtered_df[
               filtered_df["Workplace Type"].str.contains(
@@ -148,13 +215,13 @@ try:
       round(valid_deadlines.mean(), 1) if not valid_deadlines.empty else "N/A"
   )
   col4.metric(
-      "Avg. Days to Deadline",
+      "AVG. DEADLINE",
       f"{avg_days} Days" if avg_days != "N/A" else "N/A",
   )
 
   st.markdown("---")
 
-  # Analytics Charts
+  # --- ANALYTICS CHARTS (Styled with Neon Dark Mode Theme) ---
   row1_col1, row1_col2 = st.columns(2)
 
   with row1_col1:
@@ -171,10 +238,15 @@ try:
         y="Job Title",
         orientation="h",
         color="Count",
-        color_continuous_scale="Blues",
+        color_continuous_scale=[[0, "#007ACC"], [1, "#00E5FF"]],
     )
     fig_titles.update_layout(
-        yaxis={"categoryorder": "total ascending"}, showlegend=False
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        yaxis={"categoryorder": "total ascending"},
+        showlegend=False,
+        margin=dict(l=10, r=10, t=20, b=10),
     )
     st.plotly_chart(fig_titles, use_container_width=True)
 
@@ -187,8 +259,14 @@ try:
         workplace_counts,
         names="Workplace Type",
         values="count",
-        hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Pastel,
+        hole=0.5,
+        color_discrete_sequence=["#00E5FF", "#FF4081", "#00E676", "#7C4DFF"],
+    )
+    fig_donut.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=10, r=10, t=20, b=10),
     )
     st.plotly_chart(fig_donut, use_container_width=True)
 
@@ -202,9 +280,15 @@ try:
         x="Employment Type",
         y="count",
         color="count",
-        color_continuous_scale="Viridis",
+        color_continuous_scale=[[0, "#7C4DFF"], [1, "#FF4081"]],
     )
-    fig_emp.update_layout(showlegend=False)
+    fig_emp.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        margin=dict(l=10, r=10, t=20, b=10),
+    )
     st.plotly_chart(fig_emp, use_container_width=True)
 
   with row2_col2:
@@ -218,9 +302,16 @@ try:
         x="Location",
         y="count",
         color="count",
-        color_continuous_scale="Teal",
+        color_continuous_scale=[[0, "#00E676"], [1, "#00E5FF"]],
     )
-    fig_loc.update_layout(showlegend=False, xaxis_tickangle=-25)
+    fig_loc.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        xaxis_tickangle=-25,
+        margin=dict(l=10, r=10, t=20, b=10),
+    )
     st.plotly_chart(fig_loc, use_container_width=True)
 
   # Application Window Insights
@@ -269,11 +360,19 @@ try:
           x="Duration Bucket",
           y="Job Count",
           color="Job Count",
-          color_continuous_scale="Purples",
+          color_continuous_scale=[[0, "#7C4DFF"], [1, "#00E5FF"]],
           text="Job Count",
       )
       fig_hist.update_traces(textposition="auto")
-      fig_hist.update_layout(showlegend=False, xaxis_title="", yaxis_title="Jobs")
+      fig_hist.update_layout(
+          template="plotly_dark",
+          paper_bgcolor="rgba(0,0,0,0)",
+          plot_bgcolor="rgba(0,0,0,0)",
+          showlegend=False,
+          xaxis_title="",
+          yaxis_title="Jobs",
+          margin=dict(l=10, r=10, t=20, b=10),
+      )
       st.plotly_chart(fig_hist, use_container_width=True)
 
     with col_insight2:
@@ -292,14 +391,20 @@ try:
           x="Location",
           y="Days to Deadline",
           color="Location",
-          color_discrete_sequence=px.colors.qualitative.Pastel,
+          color_discrete_sequence=["#FF4081", "#00E5FF", "#00E676", "#7C4DFF"],
           text="Days to Deadline",
       )
       fig_location_days.update_traces(
           texttemplate="%{text} Days", textposition="auto"
       )
       fig_location_days.update_layout(
-          showlegend=False, yaxis_title="Average Days", xaxis_tickangle=-25
+          template="plotly_dark",
+          paper_bgcolor="rgba(0,0,0,0)",
+          plot_bgcolor="rgba(0,0,0,0)",
+          showlegend=False,
+          yaxis_title="Average Days",
+          xaxis_tickangle=-25,
+          margin=dict(l=10, r=10, t=20, b=10),
       )
       st.plotly_chart(fig_location_days, use_container_width=True)
   else:
