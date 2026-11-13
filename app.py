@@ -12,7 +12,7 @@ st.set_page_config(
     page_title="Ethiopian Job Market Analytics", page_icon="🇪🇹", layout="wide"
 )
 
-# --- CUSTOM CSS FOR HIGH-TECH DARK DASHBOARD ---
+# --- CUSTOM CSS FOR HIGH-TECH DARK DASHBOARD & FILTER STYLING ---
 st.markdown(
     """
     <style>
@@ -57,11 +57,22 @@ st.markdown(
             margin-top: 24px;
         }
 
-        /* Sidebar styling */
+        /* Sidebar styling & Multiselect matching background */
         section[data-testid="stSidebar"] {
-            background-color: #161B22;
-            border-right: 1px solid #30363D;
+            background-color: #090C10;
+            border-right: 1px solid #21262D;
         }
+        section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+            background-color: #161B22 !important;
+            border-color: #30363D !important;
+            color: #FAFAFA !important;
+        }
+        section[data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {
+            background-color: #1F6FEB !important;
+            color: #FFFFFF !important;
+        }
+
+        /* Action buttons */
         section[data-testid="stSidebar"] .stButton button {
             background: linear-gradient(135deg, #00E5FF 0%, #007ACC 100%);
             color: #0E1117;
@@ -186,7 +197,7 @@ try:
       & (raw_df["Location"].isin(selected_location))
   ]
 
-  # Key Metric Cards (styled like high-end analytics dashboards)
+  # Key Metric Cards
   col1, col2, col3, col4 = st.columns(4)
   col1.metric("TOTAL JOBS", len(filtered_df))
   col2.metric(
@@ -221,7 +232,7 @@ try:
 
   st.markdown("---")
 
-  # --- ANALYTICS CHARTS (Styled with Neon Dark Mode Theme) ---
+  # --- ANALYTICS CHARTS ---
   row1_col1, row1_col2 = st.columns(2)
 
   with row1_col1:
@@ -255,12 +266,13 @@ try:
     workplace_counts = (
         filtered_df["Workplace Type"].value_counts().reset_index()
     )
+    # Distinct neon colors for On-site, Remote, and Hybrid to prevent overlap
     fig_donut = px.pie(
         workplace_counts,
         names="Workplace Type",
         values="count",
         hole=0.5,
-        color_discrete_sequence=["#00E5FF", "#FF4081", "#00E676", "#7C4DFF"],
+        color_discrete_sequence=["#00E5FF", "#FF4081", "#FFEA00"],
     )
     fig_donut.update_layout(
         template="plotly_dark",
@@ -297,12 +309,17 @@ try:
         filtered_df["Location"].value_counts().head(10).reset_index()
     )
     loc_counts.columns = ["Location", "count"]
+    # Multi-stop color scale to show distinct min/max contrast on legend
     fig_loc = px.bar(
         loc_counts,
         x="Location",
         y="count",
         color="count",
-        color_continuous_scale=[[0, "#00E676"], [1, "#00E5FF"]],
+        color_continuous_scale=[
+            [0.0, "#7C4DFF"],
+            [0.5, "#00E5FF"],
+            [1.0, "#00E676"],
+        ],
     )
     fig_loc.update_layout(
         template="plotly_dark",
