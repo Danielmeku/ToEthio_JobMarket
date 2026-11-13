@@ -196,6 +196,16 @@ try:
       & (raw_df["Employment Type"].isin(selected_employment))
       & (raw_df["Location"].isin(selected_location))
   ]
+st.sidebar.markdown("---")
+st.sidebar.markdown(
+    """
+    <div style='text-align: center; color: #8B949E; font-size: 0.85rem;'>
+        Developed with ❤️ by <b>Dani mek</b><br>
+        <a href='https://github.com/Danielmeku/ToEthio_JobMarket/' target='_blank' style='color: #00E5FF; text-decoration: none;'>GitHub Profile</a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
   # Key Metric Cards
   col1, col2, col3, col4 = st.columns(4)
