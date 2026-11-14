@@ -159,14 +159,7 @@ if st.sidebar.button("🔄 Refresh Data"):
 st.sidebar.markdown("---")
 
 # Main Page Header
-st.markdown(
-    """
-    <h1 style='display: flex; align-items: center; gap: 12px; font-size: 2.2rem; color: #FFFFFF; font-weight: 600; margin-bottom: 0px;'>
-        <span style='font-size: 2rem;'>🇪🇹</span> Ethiopian Job Market Dashboard
-    </h1>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("🇪🇹 Ethiopian Job Market Dashboard")
 
 try:
   raw_df = load_data()
