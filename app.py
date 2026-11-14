@@ -159,7 +159,15 @@ if st.sidebar.button("🔄 Refresh Data"):
 st.sidebar.markdown("---")
 
 # Main Page Header
-st.title("🇪🇹 Ethiopian Job Market Dashboard")
+st.markdown(
+    """
+    <div style='display: flex; align-items: center; gap: 14px; margin-bottom: 20px;'>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_Ethiopia.svg' width='45' style='border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);'/>
+        <h1 style='color: #FFFFFF; font-weight: 600; margin: 0; font-size: 2.2rem;'>Ethiopian Job Market Dashboard</h1>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 try:
   raw_df = load_data()
